@@ -29,7 +29,7 @@ one per intended environment (default is `dev`):
 Next, add all your defaults to the config files, e.g.:
 
     {
-      "env": "dev",
+      "env": "%env%",
       "debug": true,
       "dbs.options": {
         "local": {
@@ -50,13 +50,13 @@ Next, add all your defaults to the config files, e.g.:
 Now register service provider in your Silex application:
 
     use Lokhman\Silex\Config\ConfigServiceProvider;
-
+    
     $app->register(new ConfigServiceProvider(__DIR__ . '/../../config'));
 
 `$dir` parameter refers to a configuration folder path with `.json` files.
 
 ### Global environment variable
-Finally you can set up your web server to add support of different deployment environments.
+Finally, you can set up your web server to add support of different deployment environments.
 In order to do this, you have to set a global environmental variable.
 
 #### nginx + PHP-FPM
@@ -81,7 +81,7 @@ Example usage:
       '%root%' => 'root',
     ]), 'uat');
 
-By default, service provider injects token `%dir%` to `$params`, which refers to `$dir` variable.
+By default, service provider injects tokens `%dir%` and `%env%` to `$params`, which refer to `$dir` and `$env` variable.
 
 ## License
 Library is available under the MIT license. The included LICENSE file describes this in detail.
