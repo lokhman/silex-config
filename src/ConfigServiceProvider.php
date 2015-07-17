@@ -5,6 +5,12 @@ namespace Lokhman\Silex\Config;
 use Silex\ServiceProviderInterface;
 use Silex\Application;
 
+/**
+ * Simple and lightweight JSON configuration provider for Silex micro-framework.
+ *
+ * @author Alexander Lokhman <alex.lokhman@gmail.com>
+ * @link https://github.com/lokhman/silex-config
+ */
 class ConfigServiceProvider implements ServiceProviderInterface {
 
     const ENVVAR = 'SILEX_ENV';
@@ -17,18 +23,21 @@ class ConfigServiceProvider implements ServiceProviderInterface {
 
     public function __construct($dir, array $params = [], $env = null) {
         $this->env = $env ? : getenv(self::ENVVAR) ? : self::ENVDEV;
-        $this->params = $params + ['%dir%' => $dir];
         $this->dir = realpath($dir);
+        $this->params = $params + [
+            '%dir%' => $this->dir,
+            '%env%' => $this->env,
+        ];
     }
 
-    static private function load($path) {
+    private static function load($path) {
         if (!is_file($path) || !is_readable($path)) {
             throw new \RuntimeException('Unable to load config from ' . $path);
         }
         return file_get_contents($path);
     }
 
-    static private function parse($str) {
+    private static function parse($str) {
         $result = json_decode($str, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \RuntimeException('JSON format is invalid');
