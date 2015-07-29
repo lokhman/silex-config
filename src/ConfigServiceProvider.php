@@ -17,10 +17,17 @@ class ConfigServiceProvider implements ServiceProviderInterface {
     const ENVDEV = 'dev';
     const CFGEXT = '.json';
 
-    private $env;
-    private $params;
-    private $dir;
+    protected $env;
+    protected $params;
+    protected $dir;
 
+    /**
+     * Class constructor.
+     *
+     * @param string $dir
+     * @param array  $params
+     * @param string $env
+     */
     public function __construct($dir, array $params = [], $env = null) {
         $this->env = $env ? : getenv(self::ENVVAR) ? : self::ENVDEV;
         $this->dir = realpath($dir);
@@ -30,14 +37,30 @@ class ConfigServiceProvider implements ServiceProviderInterface {
         ];
     }
 
-    private static function load($path) {
+    /**
+     * Load file contents from the path.
+     *
+     * @param string $path
+     *
+     * @throws \RuntimeException
+     * @return string
+     */
+    protected static function load($path) {
         if (!is_file($path) || !is_readable($path)) {
             throw new \RuntimeException('Unable to load config from ' . $path);
         }
         return file_get_contents($path);
     }
 
-    private static function parse($str) {
+    /**
+     * Convert file contents to PHP literal.
+     *
+     * @param string $str
+     *
+     * @throws \RuntimeException
+     * @return mixed
+     */
+    protected static function parse($str) {
         $result = json_decode($str, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \RuntimeException('JSON format is invalid');
@@ -45,7 +68,14 @@ class ConfigServiceProvider implements ServiceProviderInterface {
         return $result;
     }
 
-    private function replace($value) {
+    /**
+     * Recursive replace of tokens.
+     *
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function replace($value) {
         if (!$this->params) {
             return $value;
         }
@@ -61,6 +91,11 @@ class ConfigServiceProvider implements ServiceProviderInterface {
         return $value;
     }
 
+    /**
+     * Registers Config service in the given app.
+     *
+     * @param \Silex\Application $app
+     */
     public function register(Application $app) {
         $path = $this->dir . DIRECTORY_SEPARATOR . $this->env . self::CFGEXT;
         foreach (self::parse(self::load($path)) as $key => $value) {
@@ -70,6 +105,11 @@ class ConfigServiceProvider implements ServiceProviderInterface {
         }
     }
 
+    /**
+     * Bootstraps the application.
+     *
+     * @param \Silex\Application $app
+     */
     public function boot(Application $app) {
         /* not implemented */
     }
