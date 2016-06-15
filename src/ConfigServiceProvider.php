@@ -2,8 +2,8 @@
 
 namespace Lokhman\Silex\Config;
 
-use Silex\ServiceProviderInterface;
-use Silex\Application;
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 
 /**
  * Simple and lightweight JSON configuration provider for Silex micro-framework.
@@ -94,24 +94,15 @@ class ConfigServiceProvider implements ServiceProviderInterface {
     /**
      * Registers Config service in the given app.
      *
-     * @param \Silex\Application $app
+     * @param \Pimple\Container $app
      */
-    public function register(Application $app) {
+    public function register(Container $app) {
         $path = $this->dir . DIRECTORY_SEPARATOR . $this->env . self::CFGEXT;
         foreach (self::parse(self::load($path)) as $key => $value) {
-            $app[$key] = $app->share(function() use ($value) {
+            $app[$key] = $app->factory(function() use ($value) {
                 return $this->replace($value);
             });
         }
-    }
-
-    /**
-     * Bootstraps the application.
-     *
-     * @param \Silex\Application $app
-     */
-    public function boot(Application $app) {
-        /* not implemented */
     }
 
 }
