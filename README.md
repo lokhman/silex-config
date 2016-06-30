@@ -1,7 +1,11 @@
 # silex-config
 Simple and lightweight JSON configuration provider for [Silex](http://silex.sensiolabs.org/)
 micro-framework. It uses JSON file format to manage configuration. Library also supports
-different environments via setting global environment variable.
+different environments via setting global environment variable or passing command line (CLI)
+parameter.
+
+Library is fully compatible with **Silex 2.0+** (releases `2.0+`). Legacy versions are
+supported in branch `v1` (releases `<2.0`).
 
 ## Installation
 You can install library through [Composer](http://getcomposer.org):
@@ -66,6 +70,12 @@ In order to do this, you have to set a global environmental variable.
 #### Apache
 
     SetEnv SILEX_ENV prod
+
+### CLI
+
+Starting from version 2.1, library supports command line `--env` parameter to define environment.
+
+    $ php bin/script.php --env=prod
 
 ## Options
 
