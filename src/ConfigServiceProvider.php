@@ -13,9 +13,9 @@ use Pimple\ServiceProviderInterface;
  */
 class ConfigServiceProvider implements ServiceProviderInterface {
 
-    const ENVVAR = 'SILEX_ENV';
-    const ENVDEV = 'dev';
-    const CFGEXT = '.json';
+    const ENV_VAR_NAME = 'SILEX_ENV';
+    const FILE_EXTENSION = '.json';
+    const DEFAULT_ENV = 'dev';
 
     protected $env;
     protected $params;
@@ -29,7 +29,7 @@ class ConfigServiceProvider implements ServiceProviderInterface {
      * @param string $env
      */
     public function __construct($dir, array $params = [], $env = null) {
-        $this->env = $env ? : getenv(self::ENVVAR) ? : self::ENVDEV;
+        $this->env = self::getenv($env);
         $this->dir = realpath($dir);
         $this->params = $params + [
             '%dir%' => $this->dir,
@@ -38,7 +38,25 @@ class ConfigServiceProvider implements ServiceProviderInterface {
     }
 
     /**
-     * Load file contents from the path.
+     * Gets environment name based on $env, $argv, or $_ENV.
+     *
+     * @param string|null $env
+     *
+     * @return string
+     */
+    protected static function getenv($env = null) {
+        if ($env !== null) {
+            return $env;
+        }
+        $opts = getopt('', ['env:']);
+        if ($opts && isset($opts['env'])) {
+            return $opts['env'];
+        }
+        return getenv(self::ENV_VAR_NAME) ? : self::DEFAULT_ENV;
+    }
+
+    /**
+     * Loads file contents from the path.
      *
      * @param string $path
      *
@@ -53,7 +71,7 @@ class ConfigServiceProvider implements ServiceProviderInterface {
     }
 
     /**
-     * Convert file contents to PHP literal.
+     * Converts file contents to PHP literal.
      *
      * @param string $str
      *
@@ -69,7 +87,7 @@ class ConfigServiceProvider implements ServiceProviderInterface {
     }
 
     /**
-     * Recursive replace of tokens.
+     * Recursively replaces tokens.
      *
      * @param mixed $value
      *
@@ -97,7 +115,7 @@ class ConfigServiceProvider implements ServiceProviderInterface {
      * @param \Pimple\Container $app
      */
     public function register(Container $app) {
-        $path = $this->dir . DIRECTORY_SEPARATOR . $this->env . self::CFGEXT;
+        $path = $this->dir . DIRECTORY_SEPARATOR . $this->env . self::FILE_EXTENSION;
         foreach (self::parse(self::load($path)) as $key => $value) {
             $app[$key] = $app->factory(function() use ($value) {
                 return $this->replace($value);
