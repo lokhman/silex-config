@@ -1,6 +1,6 @@
 <?php
 
-namespace Lokhman\Silex\Config;
+namespace Lokhman\Silex\Provider;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -22,7 +22,7 @@ class ConfigServiceProvider implements ServiceProviderInterface {
     protected $dir;
 
     /**
-     * Class constructor.
+     * Constructor.
      *
      * @param string $dir
      * @param array  $params

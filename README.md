@@ -53,8 +53,8 @@ Next, add all your defaults to the config files, e.g.:
 ### Register
 Now register service provider in your Silex application:
 
-    use Lokhman\Silex\Config\ConfigServiceProvider;
-    
+    use Lokhman\Silex\Provider\ConfigServiceProvider;
+
     $app->register(new ConfigServiceProvider(__DIR__ . '/../../config'));
 
 `$dir` parameter refers to a configuration folder path with `.json` files.
