@@ -1,4 +1,9 @@
 # silex-config
+
+> **N.B.:** `silex-config` is now merged into [`silex-tools`](https://github.com/lokhman/silex-tools) library and further development will be discontinued. The new library is fully compatible with Silex 2.0+ and improves basic functionality of the included components.
+>
+> More details: https://github.com/lokhman/silex-tools.
+
 Simple and lightweight JSON configuration provider for [Silex](http://silex.sensiolabs.org/)
 micro-framework. It uses JSON file format to manage configuration. Library also supports
 different environments via setting global environment variable or passing command line (CLI)
