@@ -1,17 +1,15 @@
 {
     "name": "lokhman/silex-config",
     "type": "library",
-    "description": "Simple JSON configuration provider for Silex micro-framework",
-    "keywords": ["silex", "provider", "config", "json"],
+    "description": "Silex 2.0+ service provider for lightweight framework configuration",
+    "keywords": ["silex", "tools", "config"],
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Alexander Lokhman",
-            "email": "alex.lokhman@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "Alexander Lokhman",
+        "email": "alex.lokhman@gmail.com"
+    }],
     "autoload": {
-        "psr-4": { "Lokhman\\Silex\\Provider\\": "src/" }
+        "psr-4": { "Lokhman\\Silex\\": "src/Silex" }
     },
     "require": {
         "silex/silex": "~2.0"

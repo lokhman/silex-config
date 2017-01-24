@@ -1,36 +1,40 @@
 # silex-config
+Lightweight configuration service provider for [**Silex 2.0+**](http://silex.sensiolabs.org/) micro-framework.
 
-> **N.B.:** `silex-config` is now merged into [`silex-tools`](https://github.com/lokhman/silex-tools) library and further development will be discontinued. The new library is fully compatible with Silex 2.0+ and improves basic functionality of the included components.
->
-> More details: https://github.com/lokhman/silex-tools.
+> This project is a part of [`silex-tools`](https://github.com/lokhman/silex-tools) library.
 
-Simple and lightweight JSON configuration provider for [Silex](http://silex.sensiolabs.org/)
-micro-framework. It uses JSON file format to manage configuration. Library also supports
-different environments via setting global environment variable or passing command line (CLI)
-parameter.
-
-Library is fully compatible with **Silex 2.0+** (releases `2.0+`). Legacy versions are
-supported in branch `v1` (releases `<2.0`).
-
-## Installation
-You can install library through [Composer](http://getcomposer.org):
+## <a name="installation"></a>Installation
+You can install `silex-config` with [Composer](http://getcomposer.org):
 
     composer require lokhman/silex-config
 
-## Usage
+## <a name="documentation"></a>Documentation
+Simple and lightweight configuration provider, which uses JSON files to manage application configuration. Library
+supports different environments via setting a global environment variable.
+
+    use Lokhman\Silex\Provider\ConfigServiceProvider;
+
+    $app->register(new ConfigServiceProvider(), [
+        'config.dir' => __DIR__ . '/../app/config',
+    ]);
+
 ### File structure
-First off, create a `config` folder in your application root and add configuration JSON files
-one per intended environment (default is `dev`):
+First off, create a `config` folder in your application directory and add configuration JSON files one per intended
+environment (default is `local`):
 
     /
-      bin/
-      config/
-        dev.json
-        uat.json
-        prod.json
+      app/
+        config/
+          dev.json
+          local.json
+          prod.json
+          staging.json
+        logs/
       src/
+      tests/
       vendor/
       web/
+        index.php
       composer.json
       ...
 
@@ -38,35 +42,37 @@ one per intended environment (default is `dev`):
 Next, add all your defaults to the config files, e.g.:
 
     {
-      "env": "%env%",
-      "debug": true,
-      "dbs.options": {
-        "local": {
-          "driver": "pdo_mysql",
-          "host": "localhost",
-          "dbname": "database",
-          "user": "root",
-          "password": "",
-          "charset": "utf8"
+        "env": "%__ENV__%",
+        "debug": true,
+        "dbs.options": {
+            "default": {
+                "driver": "pdo_mysql",
+                "host": "localhost",
+                "dbname": "database",
+                "user": "root",
+                "password": "",
+                "charset": "utf8"
+            }
+        },
+        "any": {
+            "other": "constant"
         }
-      },
-      "any": {
-        "other": "constant"
-      }
     }
 
 ### Register
 Now register service provider in your Silex application:
 
-    use Lokhman\Silex\Provider\ConfigServiceProvider;
+    use Lokhman\Silex\Provider as ToolsProviders;
 
-    $app->register(new ConfigServiceProvider(__DIR__ . '/../../config'));
+    $app->register(new ToolsProviders\ConfigServiceProvider(), [
+        'config.dir' => __DIR__ . '/../app/config',
+    ]);
 
-`$dir` parameter refers to a configuration folder path with `.json` files.
+`config.dir` parameter refers to a configuration folder path with JSON files.
 
 ### Global environment variable
-Finally, you can set up your web server to add support of different deployment environments.
-In order to do this, you have to set a global environmental variable.
+Finally, you can set up your web server to add support of different deployment environments. In order to do this, you
+have to set a global environmental variable.
 
 #### nginx + PHP-FPM
 
@@ -78,25 +84,62 @@ In order to do this, you have to set a global environmental variable.
 
 ### CLI
 
-Starting from version 2.1, library supports command line `--env` parameter to define environment.
+    $ SILEX_ENV=prod bash -c "php bin/console migrations:status"
 
-    $ php bin/script.php --env=prod
+If you use [Console Application](https://github.com/lokhman/silex-consile) together with `ConfigServiceProvider` you can
+pass `--env` (`-e` in short) option to all registered commands:
 
-## Options
+    $ php bin/console migrations:status --env=prod
 
-`ConfigServiceProvider` constructor supports additional optional parameters as:
+## Parameters
 
-- `array $params`: array of replacement tokens to use in configuration, e.g. `['%name%' => 'Alexander']`;
-- `string $env`: name of environment to use strictly on provider registration (ignores global environment variable), e.g. `"uat"`.
+`ConfigServiceProvider` supports the following parameters:
 
-Example usage:
+| Parameter                | Description                                                                                 | Default       |
+|--------------------------|---------------------------------------------------------------------------------------------|---------------|
+| `config.dir`             | Folder path with JSON files.                                                                | `null`        |
+| `config.params`          | Array of replacement tokens to use in configuration.                                        | `[]`          |
+| `config.env.default`     | Environment to use strictly on provider registration (ignores global environment variable). | `"local"`     |
+| `config.varname.default` | Name of global environment variable.                                                        | `"SILEX_ENV"` |
 
-    $app->register(new ConfigServiceProvider(__DIR__ . '/../../config', [
-      '%version%' => '1.2',
-      '%root%' => 'root',
-    ]), 'uat');
+By default, service provider embeds tokens `__DIR__` and `__ENV__`, as well as all PHP environment variables (e.g.
+`REMOTE_ADDR`, `SERVER_NAME`, etc).
 
-By default, service provider injects tokens `%dir%` and `%env%` to `$params`, which refer to `$dir` and `$env` variable.
+## Dynamic tokens
 
-## License
+You can define tokens dynamically in the JSON files using property `$params`:
+
+    local.json
+    {
+        "$params": {
+            "SECRET": "3ecd45ff71c87269569e682f2f6b2ec4"
+        },
+        "settings": {
+            "prop1": "%SECRET%",
+            "prop2": "%secret%",
+            "prop3": "%SeCrEt%"
+        }
+    }
+
+**N.B.:** All tokens are case insensitive.
+
+## Extending
+
+You can extend JSON configuration (include one JSON file into another) simply using root property `$extends`, that
+points to the file to extend (file extension can be omitted). For example:
+
+    local.json
+    {
+        "env": "%__ENV__%",
+        "debug": true,
+        "locale": "en"
+    }
+
+    prod.json
+    {
+        "$extends": "local",
+        "debug": false
+    }
+
+## <a name="license"></a>License
 Library is available under the MIT license. The included LICENSE file describes this in detail.
