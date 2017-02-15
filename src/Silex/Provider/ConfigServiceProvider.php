@@ -137,7 +137,7 @@ class ConfigServiceProvider implements ServiceProviderInterface, BootableProvide
 
             $params = ['__DIR__' => $app['config.dir'], '__ENV__' => $app['config.env']];
             $params += array_change_key_case($app['config.params'], CASE_UPPER);
-            $app['config.params'] = $params;
+            $app['config.params'] = static::replaceTokens($params, $params);
 
             return $data;
         };
