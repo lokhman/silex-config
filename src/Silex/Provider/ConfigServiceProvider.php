@@ -3,6 +3,7 @@
  * Tools for Silex 2+ framework.
  *
  * @author Alexander Lokhman <alex.lokhman@gmail.com>
+ *
  * @link https://github.com/lokhman/silex-tools
  *
  * Copyright (c) 2016 Alexander Lokhman <alex.lokhman@gmail.com>
@@ -37,10 +38,11 @@ use Silex\Application;
  * Silex service provider for lightweight framework configuration.
  *
  * @author Alexander Lokhman <alex.lokhman@gmail.com>
+ *
  * @link https://github.com/lokhman/silex-tools
  */
-class ConfigServiceProvider implements ServiceProviderInterface, BootableProviderInterface {
-
+class ConfigServiceProvider implements ServiceProviderInterface, BootableProviderInterface
+{
     /**
      * Replaces tokens in the configuration.
      *
@@ -49,19 +51,21 @@ class ConfigServiceProvider implements ServiceProviderInterface, BootableProvide
      *
      * @return mixed
      */
-    public static function replaceTokens($data, $tokens) {
+    public static function replaceTokens($data, $tokens)
+    {
         if (is_string($data)) {
-            return preg_replace_callback('/%(\w+)%/', function($matches) use ($tokens) {
+            return preg_replace_callback('/%(\w+)%/', function ($matches) use ($tokens) {
                 $token = strtoupper($matches[1]);
                 if (isset($tokens[$token])) {
                     return $tokens[$token];
                 }
-                return getenv($token) ? : $matches[0];
+
+                return getenv($token) ?: $matches[0];
             }, $data);
         }
 
         if (is_array($data)) {
-            array_walk($data, function(&$value) use ($tokens) {
+            array_walk($data, function (&$value) use ($tokens) {
                 $value = static::replaceTokens($value, $tokens);
             });
         }
@@ -75,17 +79,18 @@ class ConfigServiceProvider implements ServiceProviderInterface, BootableProvide
      * @param string $dir  Configuration directory
      * @param string $path Configuration file path
      *
-     * @return mixed
-     *
      * @throws \RuntimeException
+     *
+     * @return mixed
      */
-    public static function readFile($dir, $path) {
+    public static function readFile($dir, $path)
+    {
         if (!pathinfo($path, PATHINFO_EXTENSION)) {
             $path .= '.json';
         }
 
         if ($path[0] != '/') {
-            $path = $dir . DIRECTORY_SEPARATOR . $path;
+            $path = $dir.DIRECTORY_SEPARATOR.$path;
         }
 
         if (!is_file($path) || !is_readable($path)) {
@@ -109,14 +114,15 @@ class ConfigServiceProvider implements ServiceProviderInterface, BootableProvide
     /**
      * {@inheritdoc}
      */
-    public function register(Container $app) {
+    public function register(Container $app)
+    {
         $app['config.dir'] = null;
         $app['config.params'] = [];
 
         $app['config.env.default'] = 'local';
         $app['config.varname.default'] = 'SILEX_ENV';
 
-        $app['config'] = function(Container $app) {
+        $app['config'] = function (Container $app) {
             if (false === $app['config.dir'] = realpath($app['config.dir'])) {
                 throw new \RuntimeException('Parameter "config.dir" should contain a valid path.');
             }
@@ -126,7 +132,7 @@ class ConfigServiceProvider implements ServiceProviderInterface, BootableProvide
                 if (isset($app['config.varname'])) {
                     $varname = $app['config.varname'];
                 }
-                $app['config.env'] = getenv($varname) ? : $app['config.env.default'];
+                $app['config.env'] = getenv($varname) ?: $app['config.env.default'];
             }
 
             $data = static::readFile($app['config.dir'], $app['config.env']);
@@ -146,10 +152,10 @@ class ConfigServiceProvider implements ServiceProviderInterface, BootableProvide
     /**
      * {@inheritdoc}
      */
-    public function boot(Application $app) {
+    public function boot(Application $app)
+    {
         foreach ($app['config'] as $key => $value) {
             $app[$key] = static::replaceTokens($value, $app['config.params']);
         }
     }
-
 }
