@@ -1,0 +1,9 @@
+{
+    "$params": {
+        "tests_dir": "%__DIR__%/..",
+        "email": "alex.lokhman@gmail.com"
+    },
+
+    "env": "%__ENV__%",
+    "dir": "%tests_dir%/Silex"
+}

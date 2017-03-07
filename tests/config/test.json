@@ -1,0 +1,7 @@
+{
+    "$extends": "local",
+
+    "file": "%__DIR__%/test.json",
+    "dir": "%tests_dir%/Silex/Provider",
+    "author": "Alexander Lokhman <%email%>"
+}
