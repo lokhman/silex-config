@@ -1,6 +1,11 @@
 # silex-config
 
+[![Build Status](https://travis-ci.org/lokhman/silex-config.svg?branch=master)](https://travis-ci.org/lokhman/silex-config)
 [![StyleCI](https://styleci.io/repos/39203466/shield?branch=master)](https://styleci.io/repos/39203466)
+[![codecov](https://codecov.io/gh/lokhman/silex-config/branch/master/graph/badge.svg)](https://codecov.io/gh/lokhman/silex-config)
+[![Packagist Downloads](https://img.shields.io/packagist/dm/lokhman/silex-config.svg?style=flat)](https://packagist.org/packages/lokhman/silex-config)
+[![Latest Version](https://img.shields.io/packagist/v/lokhman/silex-config.svg?style=flat)](https://github.com/lokhman/silex-config/releases)
+[![License](https://img.shields.io/packagist/l/lokhman/silex-config.svg?style=flat)](https://packagist.org/packages/lokhman/silex-config)
 
 Lightweight configuration service provider for [**Silex 2.0+**](http://silex.sensiolabs.org/) micro-framework.
 
