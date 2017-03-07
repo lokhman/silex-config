@@ -39,6 +39,7 @@ class ConfigServiceProviderTest extends TestCase
     {
         putenv('SILEX_ENV');
         putenv('SILEX_ENV_TEST');
+        putenv('SILEX_TEST_VAR');
     }
 
     /**
@@ -80,6 +81,9 @@ class ConfigServiceProviderTest extends TestCase
     {
         $custom = new \stdClass();
 
+        $random = hash('adler32', uniqid());
+        putenv('SILEX_TEST_VAR='.$random);
+
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
             'config.dir' => __DIR__.'/../../config',
@@ -95,6 +99,9 @@ class ConfigServiceProviderTest extends TestCase
         $dir = realpath($app['dir']);
         $this->assertNotSame(false, $dir);
         $this->assertEquals(realpath(__DIR__.'/../'), $dir);
+
+        $this->assertEquals($random, $app['var']);
+        putenv('SILEX_TEST_VAR');
     }
 
     public function testCustomEnvironment()
@@ -118,8 +125,8 @@ class ConfigServiceProviderTest extends TestCase
     {
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
-            'config.dir'         => __DIR__.'/../../config',
-            'config.env.default' => 'test',
+            'config.dir' => __DIR__.'/../../config',
+            'config.env' => 'test',
         ]);
         $app->boot();
 
@@ -147,8 +154,8 @@ class ConfigServiceProviderTest extends TestCase
 
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
-            'config.dir'             => __DIR__.'/../../config',
-            'config.varname.default' => 'SILEX_ENV_TEST',
+            'config.dir'     => __DIR__.'/../../config',
+            'config.varname' => 'SILEX_ENV_TEST',
         ]);
         $app->boot();
 
