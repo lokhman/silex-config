@@ -30,12 +30,13 @@
 namespace Lokhman\Silex\Tests\Provider;
 
 use Lokhman\Silex\Provider\ConfigServiceProvider;
-use Silex\Application;
 use PHPUnit\Framework\TestCase;
+use Silex\Application;
 
-class ConfigServiceProviderTest extends TestCase {
-
-    public function setUp() {
+class ConfigServiceProviderTest extends TestCase
+{
+    public function setUp()
+    {
         putenv('SILEX_ENV');
         putenv('SILEX_ENV_TEST');
     }
@@ -43,7 +44,8 @@ class ConfigServiceProviderTest extends TestCase {
     /**
      * @expectedException RuntimeException
      */
-    public function testNoOptionsInitializer() {
+    public function testNoOptionsInitializer()
+    {
         $app = new Application();
         $app->register(new ConfigServiceProvider());
         $app->boot();
@@ -52,7 +54,8 @@ class ConfigServiceProviderTest extends TestCase {
     /**
      * @expectedException RuntimeException
      */
-    public function testWrongConfigPath() {
+    public function testWrongConfigPath()
+    {
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
             'config.dir' => __DIR__.'/wrong/path',
@@ -63,7 +66,8 @@ class ConfigServiceProviderTest extends TestCase {
     /**
      * @expectedException RuntimeException
      */
-    public function testBrokenConfigFile() {
+    public function testBrokenConfigFile()
+    {
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
             'config.dir' => __DIR__.'/../../config',
@@ -72,13 +76,14 @@ class ConfigServiceProviderTest extends TestCase {
         $app->boot();
     }
 
-    public function testDefaultEnvironment() {
+    public function testDefaultEnvironment()
+    {
         $custom = new \stdClass();
 
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
             'config.dir' => __DIR__.'/../../config',
-            '_custom' => $custom,
+            '_custom'    => $custom,
         ]);
         $app->boot();
 
@@ -92,7 +97,8 @@ class ConfigServiceProviderTest extends TestCase {
         $this->assertEquals(realpath(__DIR__.'/../'), $dir);
     }
 
-    public function testCustomEnvironment() {
+    public function testCustomEnvironment()
+    {
         $dir = __DIR__.'/../../config';
 
         $app = new Application();
@@ -108,10 +114,11 @@ class ConfigServiceProviderTest extends TestCase {
         $this->assertContains('<alex.lokhman@gmail.com>', $app['author']);
     }
 
-    public function testCustomDefaultEnvironment() {
+    public function testCustomDefaultEnvironment()
+    {
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
-            'config.dir' => __DIR__.'/../../config',
+            'config.dir'         => __DIR__.'/../../config',
             'config.env.default' => 'test',
         ]);
         $app->boot();
@@ -119,7 +126,8 @@ class ConfigServiceProviderTest extends TestCase {
         $this->assertEquals('test', $app['env']);
     }
 
-    public function testDefaultEnvVarInitializer() {
+    public function testDefaultEnvVarInitializer()
+    {
         putenv('SILEX_ENV=test');
 
         $app = new Application();
@@ -133,12 +141,13 @@ class ConfigServiceProviderTest extends TestCase {
         putenv('SILEX_ENV');
     }
 
-    public function testCustomEnvVarInitializer() {
+    public function testCustomEnvVarInitializer()
+    {
         putenv('SILEX_ENV_TEST=test');
 
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
-            'config.dir' => __DIR__.'/../../config',
+            'config.dir'             => __DIR__.'/../../config',
             'config.varname.default' => 'SILEX_ENV_TEST',
         ]);
         $app->boot();
@@ -147,5 +156,4 @@ class ConfigServiceProviderTest extends TestCase {
 
         putenv('SILEX_ENV_TEST');
     }
-
 }
