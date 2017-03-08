@@ -103,12 +103,12 @@ pass `--env` (`-e` in short) option to all registered commands:
 
 `ConfigServiceProvider` supports the following parameters:
 
-| Parameter                | Description                                                                                 | Default       |
-|--------------------------|---------------------------------------------------------------------------------------------|---------------|
-| `config.dir`             | Folder path with JSON files.                                                                | `null`        |
-| `config.params`          | Array of replacement tokens to use in configuration.                                        | `[]`          |
-| `config.env.default`     | Environment to use strictly on provider registration (ignores global environment variable). | `"local"`     |
-| `config.varname.default` | Name of global environment variable.                                                        | `"SILEX_ENV"` |
+| Parameter        | Description                                                                                 | Default       |
+|------------------|---------------------------------------------------------------------------------------------|---------------|
+| `config.dir`     | Folder path with JSON files.                                                                | `null`        |
+| `config.params`  | Array of replacement tokens to use in configuration.                                        | `[]`          |
+| `config.env`     | Environment to use strictly on provider registration (ignores global environment variable). | `"local"`     |
+| `config.varname` | Name of global environment variable.                                                        | `"SILEX_ENV"` |
 
 By default, service provider embeds tokens `__DIR__` and `__ENV__`, as well as all PHP environment variables (e.g.
 `REMOTE_ADDR`, `SERVER_NAME`, etc).

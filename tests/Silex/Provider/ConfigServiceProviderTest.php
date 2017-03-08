@@ -79,22 +79,22 @@ class ConfigServiceProviderTest extends TestCase
 
     public function testDefaultEnvironment()
     {
-        $custom = new \stdClass();
-
         $random = hash('adler32', uniqid());
         putenv('SILEX_TEST_VAR='.$random);
 
+        $custom = strrev($random);
+
         $app = new Application();
         $app->register(new ConfigServiceProvider(), [
-            'config.dir' => __DIR__.'/../../config',
-            '_custom'    => $custom,
+            'config.dir'    => __DIR__.'/../../config',
+            'config.params' => ['custom' => $custom],
         ]);
         $app->boot();
 
         $this->assertArrayHasKey('config', $app);
         $this->assertEquals('local', $app['env']);
         $this->assertEquals('%__ENV__%', $app['config']['env']);
-        $this->assertSame($custom, $app['_custom']);
+        $this->assertEquals($custom, $app['custom']);
 
         $dir = realpath($app['dir']);
         $this->assertNotSame(false, $dir);
@@ -116,6 +116,7 @@ class ConfigServiceProviderTest extends TestCase
         $app->boot();
 
         $this->assertEquals('test', $app['env']);
+        $this->assertEquals('%custom%', $app['custom']);
         $this->assertEquals(__DIR__, realpath($app['dir']));
         $this->assertEquals(realpath($dir).'/test.json', $app['file']);
         $this->assertContains('<alex.lokhman@gmail.com>', $app['author']);

@@ -6,5 +6,6 @@
 
     "env": "%__ENV__%",
     "var": "%SILEX_TEST_VAR%",
-    "dir": "%tests_dir%/Silex"
+    "dir": "%tests_dir%/Silex",
+    "custom": "%custom%"
 }
