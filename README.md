@@ -94,7 +94,7 @@ have to set a global environmental variable.
 
     $ SILEX_ENV=prod bash -c "php bin/console migrations:status"
 
-If you use [Console Application](https://github.com/lokhman/silex-consile) together with `ConfigServiceProvider` you can
+If you use [Console Application](https://github.com/lokhman/silex-console) together with `ConfigServiceProvider` you can
 pass `--env` (`-e` in short) option to all registered commands:
 
     $ php bin/console migrations:status --env=prod
